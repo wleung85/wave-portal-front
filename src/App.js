@@ -7,10 +7,51 @@ export default function App() {
 
   /* Store the user's public wallet */
   const [currentAccount, setCurrentAccount] = useState("");
+  const [allWaves, setAllWaves] = useState([]);
   const [totalWaves, setTotalWaves] = useState(0);
   const [userWaves, setUserWaves] = useState(0);
-  const contractAddress = "0x936f3759D72Dc10f941fBa65D9093caF10A544b7";
+  const [message, setMessage] = useState("This is my wave message!");
+  const contractAddress = "0xc418dC84f1bE933285EC795b4a7200c65C541039";
   const contractABI = abi.abi;
+
+  const getAllWaves = async () => {
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
+
+        // Call the getAllWaves method from the Smart Contract
+        const waves = await wavePortalContract.getAllWaves();
+
+        // We only need address, timestamp, and message in our UI so let's pick those out
+        let wavesCleaned = [];
+        waves.forEach(wave => {
+          wavesCleaned.push({
+            address: wave.waver,
+            timestamp: new Date(wave.timestamp * 1000),
+            message: wave.message
+          });
+        });
+
+        // Store data in React state
+        setAllWaves(wavesCleaned);
+
+        let count = await wavePortalContract.getTotalWaves();
+        console.log("Retrieved total wave count...", count.toNumber());
+        setTotalWaves(count.toNumber());
+
+        let userCount = await wavePortalContract.getAddrWaveCount();
+        console.log("Retrieved user wave count...", userCount.toNumber());
+        setUserWaves(userCount.toNumber());
+      } else {
+        console.log("Ethereum object doesn't exist!")
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const checkIfWalletIsConnected = async () => {
     try {
@@ -31,6 +72,7 @@ export default function App() {
         const account = accounts[0];
         console.log("Found an authorized account:", account);
         setCurrentAccount(account);
+        getAllWaves();
       } else {
         console.log("No authorized account found");
       }
@@ -76,19 +118,13 @@ export default function App() {
         let count = await wavePortalContract.getTotalWaves();
         console.log("Retrieved total wave count...", count.toNumber());
 
-        const waveTxn = await wavePortalContract.wave();
+        const waveTxn = await wavePortalContract.wave(message);
         console.log("Mining...", waveTxn.hash);
 
         await waveTxn.wait();
         console.log("Mined -- ", waveTxn.hash);
 
-        count = await wavePortalContract.getTotalWaves();
-        console.log("Retrieved total wave count...", count.toNumber());
-        setTotalWaves(count.toNumber());
-
-        let userCount = await wavePortalContract.getAddrWaveCount();
-        console.log("Retrieved user wave count...", userCount.toNumber());
-        setUserWaves(userCount.toNumber());
+        await getAllWaves();
 
       } else {
         console.log("Ethereum object doesn't exist!");
@@ -110,6 +146,7 @@ export default function App() {
         I am Winston and I did not work on self-driving cars so that's pretty normal right? Connect your Ethereum wallet and wave at me!
         </div>
 
+        <textarea value={message} onChange={(e) => setMessage(e.target.value)} />
         <button className="waveButton" onClick={wave}>
           Wave at Me
         </button>
@@ -130,6 +167,16 @@ export default function App() {
             </div>
           </>
         )}
+
+        {allWaves.map((wave, index) => {
+          return (
+            <div key={index} style={{ backgroundColor: "OldLace", marginTop: "16px", padding: "8px" }}>
+              <div>Address: {wave.address}</div>
+              <div>Time: {wave.timestamp.toString()}</div>
+              <div>Message: {wave.message}</div>
+            </div>
+          )
+        })}
       </div>
     </div>
   );
