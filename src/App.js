@@ -11,7 +11,8 @@ export default function App() {
   const [totalWaves, setTotalWaves] = useState(0);
   const [userWaves, setUserWaves] = useState(0);
   const [message, setMessage] = useState("This is my wave message!");
-  const contractAddress = "0x2619448A50F9Fed5498E44856Caffc5512657def";
+  const [topWavers, setTopWavers] = useState([]);
+  const contractAddress = "0x193CDac5445aA2FbF9ABc2Aa6418C1d2262886EB";
   const contractABI = abi.abi;
 
   const getAllWaves = async () => {
@@ -38,6 +39,35 @@ export default function App() {
         // Store data in React state
         setAllWaves(wavesCleaned);
 
+        await getWaveCounts();
+
+        wavePortalContract.on("NewWave", (from, timestamp, message) => {
+          console.log("NewWave", from, timestamp, message);
+
+          getWaveCounts();
+
+          setAllWaves(prevState => [...prevState, {
+            address: from,
+            timestamp: new Date(timestamp * 1000),
+            message:message
+          }]);
+        })
+      } else {
+        console.log("Ethereum object doesn't exist!")
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const getWaveCounts = async () => {
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
+
         let count = await wavePortalContract.getTotalWaves();
         console.log("Retrieved total wave count...", count.toNumber());
         setTotalWaves(count.toNumber());
@@ -45,10 +75,23 @@ export default function App() {
         let userCount = await wavePortalContract.getAddrWaveCount();
         console.log("Retrieved user wave count...", userCount.toNumber());
         setUserWaves(userCount.toNumber());
+        
+        // Get top wavers
+        const topWavers = await wavePortalContract.getTopWavers();
+        let topWaversCleaned = [];
+        topWavers.forEach((topWaver) => {
+          console.log("Top Waver %s has waved %d times", topWaver.waver, topWaver.count.toNumber());
+          topWaversCleaned.push({
+            address: topWaver.waver,
+            count: topWaver.count.toNumber()
+          })
+        })
+        setTopWavers(topWaversCleaned);
       } else {
         console.log("Ethereum object doesn't exist!")
       }
-    } catch (error) {
+
+    } catch(error) {
       console.log(error);
     }
   }
@@ -107,6 +150,7 @@ export default function App() {
   }, []);
 
   const wave = async () => {
+    console.log("Wave called");
     try {
       const { ethereum } = window;
 
@@ -118,13 +162,11 @@ export default function App() {
         let count = await wavePortalContract.getTotalWaves();
         console.log("Retrieved total wave count...", count.toNumber());
 
-        const waveTxn = await wavePortalContract.wave(message);
+        const waveTxn = await wavePortalContract.wave(message, { gasLimit: 300000 });
         console.log("Mining...", waveTxn.hash);
 
         await waveTxn.wait();
         console.log("Mined -- ", waveTxn.hash);
-
-        await getAllWaves();
 
       } else {
         console.log("Ethereum object doesn't exist!");
@@ -143,13 +185,8 @@ export default function App() {
         </div>
 
         <div className="bio">
-        I am Winston and I did not work on self-driving cars so that's pretty normal right? Connect your Ethereum wallet and wave at me!
+        See who can send the most waves!
         </div>
-
-        <textarea value={message} onChange={(e) => setMessage(e.target.value)} />
-        <button className="waveButton" onClick={wave}>
-          Wave at Me
-        </button>
 
         {!currentAccount && (
           <button className="waveButton" onClick={connectWallet}>
@@ -159,11 +196,39 @@ export default function App() {
 
         {currentAccount && (
           <>
-            <div className="header">
-              Total number of waves: {totalWaves}
+            <div className="totalWaves">
+              <div className="header">
+                Total number of waves
+              </div>
+              <div className="totalWavesNum">
+                {totalWaves}
+              </div>
             </div>
-            <div className="header">
-              Your number of waves: {userWaves}
+            <div className="totalWaves">
+              <div className="header">
+                Your number of waves
+              </div>
+              <div className="totalWavesNum">
+                {userWaves}
+              </div>
+            </div>
+            <div className="topWavers">
+              {topWavers.map((topWaver, index) => {
+                return (
+                  <div className="leaderboard" key={index}>
+                    <div>{index === 0 ? <span>🥇</span> : index === 1 ? <span>🥈</span> : <span>🥉</span>}</div>
+                    <div>Address: {topWaver.address}</div>
+                    <div>Count: {topWaver.count}</div>
+                  </div>
+                )
+              })}
+            </div>
+            <div className="waveForm">
+              <textarea value={message} rows={4} onChange={(e) => setMessage(e.target.value)} />
+              <br/>
+              <button className="waveButton" onClick={wave}>
+                Wave at Me
+              </button>
             </div>
           </>
         )}

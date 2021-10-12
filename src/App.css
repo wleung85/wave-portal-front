@@ -1,38 +1,76 @@
-.App {
-  text-align: center;
+.mainContainer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 64px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.dataContainer {
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  max-width: 600px;
 }
 
-.App-link {
-  color: #61dafb;
+.header {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 600;
+  color: #fbf9ff;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.bio {
+  text-align: center;
+  color: #fbf9ff;
+  margin-top: 16px;
+}
+
+.waveButton {
+  cursor: pointer;
+  margin-top: 16px;
+  padding: 8px;
+  border: 0;
+  border-radius: 5px;
+  background-color: #32908F;
+  
+}
+
+.totalWaves {
+  text-align: center;
+  color: black;
+  margin-top: 16px;
+  border-style: solid;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  background-color: #a2a3bb;
+}
+
+.totalWaves .header {
+  font-size: 20px;
+}
+
+.totalWavesNum {
+  font-size: 25px;
+  font-weight: 500;
+  color: black;
+}
+
+.waveForm {
+  text-align: center;
+  margin-top: 16px;
+}
+
+.waveForm textarea {
+  width: 100%;
+  background-color: #b3b7ee;
+  font-size: 14px;
+}
+
+.leaderboard {
+  background-color: #fbf9ff;
+  margin-top: 3px;
+  margin-bottom: 3px;
+  padding: 10px;
+  text-align: center;
 }
