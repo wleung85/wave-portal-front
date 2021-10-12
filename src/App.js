@@ -3,6 +3,19 @@ import { ethers } from "ethers";
 import './App.css';
 import abi from "./utils/WavePortal.json";
 
+function AddressLink(props) {
+  return (
+    <div className="address">
+      <a href={"https://rinkeby.etherscan.io/address/" + props.address.toString()}>
+        {props.address.toString().substring(0, props.width - 3) + "..."}
+      </a>
+      <span style={{'float': 'right'}}>
+        {props.date ? props.date.toLocaleDateString() : null}
+      </span>
+    </div>
+  );
+}
+
 export default function App() {
 
   /* Store the user's public wallet */
@@ -12,7 +25,7 @@ export default function App() {
   const [userWaves, setUserWaves] = useState(0);
   const [message, setMessage] = useState("This is my wave message!");
   const [topWavers, setTopWavers] = useState([]);
-  const contractAddress = "0x193CDac5445aA2FbF9ABc2Aa6418C1d2262886EB";
+  const contractAddress = "0xB09298561b82f0Ac910be6cD06CFA5547b9A2F78";
   const contractABI = abi.abi;
 
   const getAllWaves = async () => {
@@ -185,40 +198,43 @@ export default function App() {
         </div>
 
         <div className="bio">
-        See who can send the most waves!
+        Whoever sends the most waves gets an ETH reward!
         </div>
 
         {!currentAccount && (
-          <button className="waveButton" onClick={connectWallet}>
+          <button className="connectButton" onClick={connectWallet}>
             Connect Wallet
           </button>
         )}
 
         {currentAccount && (
           <>
-            <div className="totalWaves">
-              <div className="header">
-                Total number of waves
+            <div className="totalWavesContainer">
+              <div className="totalWaves">
+                <div className="header">
+                  Total Waves
+                </div>
+                <div className="totalWavesNum">
+                  {totalWaves}
+                </div>
               </div>
-              <div className="totalWavesNum">
-                {totalWaves}
-              </div>
-            </div>
-            <div className="totalWaves">
-              <div className="header">
-                Your number of waves
-              </div>
-              <div className="totalWavesNum">
-                {userWaves}
+              <div className="totalWaves" style={{float: 'right'}}>
+                <div className="header">
+                  Your Waves
+                </div>
+                <div className="totalWavesNum">
+                  {userWaves}
+                </div>
               </div>
             </div>
             <div className="topWavers">
               {topWavers.map((topWaver, index) => {
                 return (
-                  <div className="leaderboard" key={index}>
-                    <div>{index === 0 ? <span>🥇</span> : index === 1 ? <span>🥈</span> : <span>🥉</span>}</div>
-                    <div>Address: {topWaver.address}</div>
-                    <div>Count: {topWaver.count}</div>
+                  <div className={"leaderboard " + `leaderboard${index}`} key={index}>
+                    <div style={{fontSize: '30px'}}>{index === 0 ? <span>🥇</span> : index === 1 ? <span>🥈</span> : <span>🥉</span>}</div>
+                    <div className="totalWavesNum">{topWaver.count}</div>
+                    <AddressLink address={topWaver.address} width={20}/>
+                    
                   </div>
                 )
               })}
@@ -227,7 +243,7 @@ export default function App() {
               <textarea value={message} rows={4} onChange={(e) => setMessage(e.target.value)} />
               <br/>
               <button className="waveButton" onClick={wave}>
-                Wave at Me
+                👋 Wave
               </button>
             </div>
           </>
@@ -235,10 +251,11 @@ export default function App() {
 
         {allWaves.map((wave, index) => {
           return (
-            <div key={index} style={{ backgroundColor: "OldLace", marginTop: "16px", padding: "8px" }}>
-              <div>Address: {wave.address}</div>
-              <div>Time: {wave.timestamp.toString()}</div>
-              <div>Message: {wave.message}</div>
+            <div key={index} className="messageBox">
+              <div className="message">{wave.message}</div>
+              <div className="messageDetails">
+                <AddressLink style={{'float': 'left'}} address={wave.address} width={50} date={wave.timestamp}/>
+              </div>
             </div>
           )
         })}

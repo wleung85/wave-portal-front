@@ -1,3 +1,5 @@
+/* https://coolors.co/3c91e6-9fd356-342e37-fafffd-fa824c */
+
 .mainContainer {
   display: flex;
   justify-content: center;
@@ -25,14 +27,19 @@
   margin-top: 16px;
 }
 
-.waveButton {
+.connectButton {
   cursor: pointer;
-  margin-top: 16px;
   padding: 8px;
   border: 0;
+  background-color: #9fd356;
   border-radius: 5px;
-  background-color: #32908F;
-  
+  margin-top: 15px;
+}
+
+.totalWavesContainer {
+  width: 100%;
+  margin: auto;
+  justify-content: space-between;
 }
 
 .totalWaves {
@@ -43,7 +50,11 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
-  background-color: #a2a3bb;
+  background-color: #fa824c;
+  width: 48%;
+  float: left;
+  border-radius: 20px;
+  border-width: 2px;
 }
 
 .totalWaves .header {
@@ -59,18 +70,91 @@
 .waveForm {
   text-align: center;
   margin-top: 16px;
+  width: 100%;
+  position: relative;
 }
 
 .waveForm textarea {
+  margin: 0;
+  padding: 0;
   width: 100%;
-  background-color: #b3b7ee;
+  background-color: #fafffd;
   font-size: 14px;
+  resize: none;
+}
+
+.waveButton {
+  cursor: pointer;
+  padding: 8px;
+  border: 0;
+  background-color: #9fd356;
+  position: absolute;
+  z-index: 2;
+  right: -1px;
+  bottom: 5px;
+  
+}
+
+.topWavers {
+  display: flex;
+  justify-content: space-between;
 }
 
 .leaderboard {
   background-color: #fbf9ff;
   margin-top: 3px;
   margin-bottom: 3px;
+  margin-left: 1px;
+  margin-right: 1px;
   padding: 10px;
   text-align: center;
+  width: 28%;
+  float: left;
+  border-radius: 20px;
+}
+
+.leaderboard0 {
+  background: linear-gradient(-45deg, #9fd356,#FFD700, #daa520, #342e37);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+}
+
+.leaderboard1 {
+  background: linear-gradient(-45deg, #c0c0c0,#a9a9a9, #808080, #342e37);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+}
+
+.leaderboard2 {
+  background: linear-gradient(-45deg, #808000,#aa8736, #bb8141, #342e37);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+}
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
+.address {
+  font-style: italic;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-size: 10px;
+  width: auto;
+}
+
+.messageDetails {
+  margin-top: 16px;
+}
+
+.messageBox {
+  padding: 6px;
+  background-color: #9fd356;
 }
