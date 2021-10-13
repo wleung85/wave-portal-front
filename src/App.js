@@ -25,7 +25,7 @@ export default function App() {
   const [userWaves, setUserWaves] = useState(0);
   const [message, setMessage] = useState("This is my wave message!");
   const [topWavers, setTopWavers] = useState([]);
-  const contractAddress = "0xB09298561b82f0Ac910be6cD06CFA5547b9A2F78";
+  const contractAddress = "0x82A67f18555b631fd50E6b3dF7dfa9a20d564B47";
   const contractABI = abi.abi;
 
   const getAllWaves = async () => {
@@ -249,7 +249,7 @@ export default function App() {
           </>
         )}
 
-        {allWaves.map((wave, index) => {
+        {allWaves.slice(0).reverse().map((wave, index) => {
           return (
             <div key={index} className="messageBox">
               <div className="message">{wave.message}</div>
